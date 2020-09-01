@@ -37,6 +37,10 @@ def make_array(message, width=12, height=19, spaces=2):
 
         return printed_string
 
+    if height<0 or width<0:
+        print("Nah")
+        return
+
     message = list(message)
     return_array = ["" for x in range(height)]
     increment = 0
@@ -146,13 +150,13 @@ def revert_message(message, spaces=2, final_message="", increment=0):
 
     # VVVV sometimes the code messes up if this isnt in, idk what this does but it works
     try:
-        if message_array[-1][-1]==" ":
+        if message_array[-1][-1]==" " and len(message_array[-1])+1==len(message[-2]):
             message_array[-1].pop(-1)
     except:
         pass
 
-    #for thing in message_array:
-    #    print(thing)
+    for thing in message_array:
+        print(thing)
 
     while first_index_is_filled:
         # VVVV calculation to improve readability
@@ -186,11 +190,11 @@ def revert_message(message, spaces=2, final_message="", increment=0):
 
 message = "Hello everyone, I hope you find this code useful"
 
-width = 5
+width = 12
 
 height = 19
 
-spaces = 2
+spaces = 0
 
 copy_to_clipboard = False
 
