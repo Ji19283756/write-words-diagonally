@@ -2,6 +2,8 @@
 This takes an input and then writes the word diagonally, also contains a function that can turn it back
 For example the string: "Hello everyone, I hope you find this code useful"
 would turn into:
+
+
 H l   r , p f s e       
 e o e e o   i s         
 l v n h u h u           
