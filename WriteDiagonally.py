@@ -1,119 +1,87 @@
 import pyperclip
 
 
-def array_to_string(array, printed_string=""):
-    for thing in array:
-        printed_string += thing
-    return printed_string
-
-
 def make_array(message, width=12, height=19, spaces=2):
-    def array_to_string_and_add_spaces_and_make_all_equal_length(array, printed_string="", spaces=2, width=12):
-        # VVVV makes a string with a certain amount of spaces based on the value of space
-        spaces = "".join(" " for x in range(spaces))
+    def array_to_string_add_spaces_make_all_equal_length\
+                    (array, spaces=2, width=12):
+        #print(f"{width} + {spaces}")
+        # VVVV  turns each line of the array to a list and adds spaces based on spaces
+        #array_with_spaces = [[letter+space_of_len(spaces) for letter in line]
+        #     for line in array if len(line)!=0]
+        # consistant_array_with_spaces= ["".join(line)+space_of_len((width-len(line))*(spaces+1))
+        #    for line in array_with_spaces]
 
-        # VVVV  turns each string in the array into a list
-        array_with_strings_to_arrays = [list(string) for string in array if len(string)>0]
+        # VVVV  turns each line of the array to a list and adds spaces based on spaces
+        array_with_spaces = ["".join(letter + " " * spaces for letter in line)
+                             for line in array if len(line)!=0]
 
-        # VVVV  adds a space to each of the letters, the amount of spaces is determined my space
-        array_with_strings_to_arrays_and_spaces = \
-            [[letter + spaces for letter in mini_array] for mini_array in array_with_strings_to_arrays]
+        # VVVV turns the message into a consistant width
+        consistant_array_with_spaces = [line + " " * (width*(spaces + 1) - len(line))
+                            for line in array_with_spaces]
 
-        for line in array_with_strings_to_arrays_and_spaces:
-            while len(line) < width:
-                line += [spaces + " "]
-            line+=["\n"]
-
-        # _______________________________________________________________________________________________________
-
-        for line in array_with_strings_to_arrays_and_spaces:
-            for letter in line:
-                printed_string += letter
+        printed_string="".join(line+"\n" for line in consistant_array_with_spaces)
 
         return printed_string
 
-    if height<0 or width<0 or spaces<0:
+    if height < 0 or width < 0 or spaces < 0 or message == None:
         print("Nah")
         return
 
     message = list(message)
     return_array = ["" for x in range(height)]
     increment = 0
-
-    # vvv while the last array index is not filled and words in the message sill havent been added
-    while len(return_array[height - 1]) < width and len(message) > 0:
+    message_increment=0
+    # vvv while the last array index is not filled and words in the message
+    # still haven't been added
+    while len(return_array[height - 1]) < width and message_increment<len(message):
         current = increment  # the current array index
 
-        # vvv whiel the index is bigger than -1, the current index isnt bigger than the width, and theres
-        # still letters to add
-        while current >= 0 and len(return_array[current]) < width and len(message) > 0:
-            return_array[current] += message[0]
-            message.pop(0)
-            current -= 1  # everytime a letter is added, the index gets lower to move to the one below
-        increment += increment < (height - 1)  # insures that the array index isnt more than the length of
+        # VVVV while the index is bigger than -1, the current index isn't bigger
+        # than the width, and there still letters to add
+        while current >= 0 and len(return_array[current]) < width and \
+                message_increment<len(message) :
+            return_array[current] += message[message_increment]
+            message_increment+=1
+            # everytime a letter is added, the index gets lower to move to the one below
+            current -= 1
+            # insures that the array index isn't more than the length of
 
-    return_array = \
-        array_to_string_and_add_spaces_and_make_all_equal_length(return_array, spaces=spaces, width=width)
+        increment += increment < (height - 1)
+    return_array = array_to_string_add_spaces_make_all_equal_length(return_array, spaces=spaces, width=width)
     return return_array
 
 
 def revert_message(message, spaces=2, final_message="", increment=0):
-    def remove_spaces(message, spaces, current=0):
-        double_array = [[] for x in range(len(message))]
-
-        # this adds the letters from message to double_array then removes the letter spaces
-        # the number of spaces removed is determined by the spaces parameter
-        for mini_array in message:
-            while len(mini_array) > 0:
-                double_array[current] += [mini_array[0]]
-                for x in range(spaces + 1):
-                    if len(mini_array) > 0:
-                        mini_array.pop(0)
-            current += 1
-
-        return double_array
-
-    if message==None or spaces<0:
+    if message is None or spaces < 0:
         print("Please but a number of spaces that is acceptable")
         return
 
-    message=message.split("\n")
-    message_array=[list(line) for line in message if len(line)!=0]
+    message = message.split("\n")
+    # all spaces that were added for visual purposes are removed
+    # iterates through ever mini_array within message, then it makes a double array
+    # that has every letter in miniarray, with the increment based on spaces amount
+    message_array = [[mini_array[x] for x in range(0,len(mini_array),spaces+1)]
+                      for mini_array in message if len(mini_array)!=0]
 
-    # VVVV  removes the spaces that were added for visual purposes
-    message_array = remove_spaces(message_array, spaces=spaces)
-
-    # VVVV finds the array position of the last letter in the message, this is needed as the letters
-    # in the correct order, this is done by seeing if consecutive array indexes are the same length
-    current = -1
-    if len(message_array) > 1:
-        for x in range(-1, -len(message_array) - 1, -1):
-            if len(message_array[x]) == len(message_array[x - 1]):
-                increment = message_array.index(message_array[x])
-                break
-
-    # VVVV shaves off the extra words until the word becomes a diagonal, This is done as when
-    # we found out which indexes have the same length, we know how many times we have to shave
-    # we then add it to the final message and remove it from the array, then if we can we move to the next
-    # array if not, the while loop ends and then the starting array index changes
-    for x in range(increment, 0, -1):
+    # VVVV shaves off the extra words until the word becomes a diagonal
+    for x in range(len(message), 0, -1):
         thing = x
         while True:
             try:
                 final_message += message_array[thing][-1]
                 message_array[thing].pop(-1)
                 thing += 1
-            except:
+            except IndexError:
                 break
-
-    mini_array = 0
 
     # VVVV calculation to improve readability
     first_index_is_filled = len(message_array[0]) > 0
+    mini_array = 0
 
+    # print(message_array)
     # VVVV take the remaining words from message_array and then adds them to final message
     # and removes it from message_array
-
+    increment=0
     while first_index_is_filled:
 
         # VVVV calculation to improve readability
@@ -132,29 +100,28 @@ def revert_message(message, spaces=2, final_message="", increment=0):
             mini_array %= (len(message_array))
         else:
 
-            # if the current index position is unfilled, then it will resart at index position 0
+            # if the current index position is unfilled, then it will restart at index position 0
             mini_array = 0
 
         # VVVV calculation to improve readability
         first_index_is_filled = len(message_array[0]) > 0
 
     # VVVV because the words are added in backwards order, this will reverse it and turn it into a string
-    final_message=final_message[::-1].strip()
+    final_message = final_message[::-1].strip()
 
     return final_message
 
 
 # OPTIONS:______________________________________________________________________________________________
 
-message = "somebody once told me the world was going to roll me i aint the sharpest tool in the shed"
-
+message = "I hope you find this code useful"
 width = 12
 
 height = 19
 
 spaces = 2
 
-copy_to_clipboard = False
+copy_to_clipboard = True
 
 # ______________________________________________________________________________________________________
 
